@@ -1,11 +1,11 @@
 import express from "express";
-import { UserModel } from "./db.js";
+import { ContentModel, UserModel } from "./db.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { UserMiddleware } from "./middleware.js";
 
-// import mongoose from "mongoose";
 const app = express();
-// const JWT_PASSWORD = "heiei";
+
 dotenv.config();
 const JWT_PASSWORD = process.env.JWT_PASSWORD as string;
 
@@ -56,7 +56,22 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 });
 
-app.delete("/api/v2/content", (req, res) => {});
+app.post("/api/v2/content", UserMiddleware, async (req, res) => {
+  const link = req.body.link;
+  const type = req.body.type;
+
+  await ContentModel.create({
+    link,
+    type,
+    //@ts-ignore
+    userId: req.userId,
+    tags: [],
+  });
+  return res.json({
+    message: "Content Added !! ",
+  });
+});
+
 app.post("/api/v2/brain/share", (req, res) => {});
 app.post("/api/v2/brain/:shareLink", (req, res) => {});
 
