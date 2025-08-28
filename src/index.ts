@@ -56,7 +56,7 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 });
 
-app.post("/api/v2/content", UserMiddleware, async (req, res) => {
+app.post("/api/v1/content", UserMiddleware, async (req, res) => {
   const link = req.body.link;
   const type = req.body.type;
 
@@ -72,7 +72,16 @@ app.post("/api/v2/content", UserMiddleware, async (req, res) => {
   });
 });
 
-app.post("/api/v2/brain/share", (req, res) => {});
+app.get("/api/v1/content", UserMiddleware, async(req, res) => {
+  //@ts-ignore
+  const userId = req.userId;
+  const content = await ContentModel.find({
+    userId
+  }).populate("userId", "username")
+  res.json({
+    content
+  })
+});
 app.post("/api/v2/brain/:shareLink", (req, res) => {});
 
 app.listen(3000, () => {

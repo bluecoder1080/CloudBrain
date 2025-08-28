@@ -7,8 +7,8 @@ export const UserMiddleware = (
   res: Response,
   next: NextFunction
 ) => {
-  const authHrader = req.headers["authorization"];
-  const token = authHrader?.split(" ")[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader?.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Access denied, token missing" });
