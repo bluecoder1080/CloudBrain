@@ -56,6 +56,7 @@ app.post("/api/v1/signin", async (req, res) => {
   }
 });
 
+// POST THE CONTENT END POINT
 app.post("/api/v1/content", UserMiddleware, async (req, res) => {
   const link = req.body.link;
   const type = req.body.type;
@@ -72,17 +73,33 @@ app.post("/api/v1/content", UserMiddleware, async (req, res) => {
   });
 });
 
-app.get("/api/v1/content", UserMiddleware, async(req, res) => {
+// GET THE CONTENT END POINT
+app.get("/api/v1/content", UserMiddleware, async (req, res) => {
   //@ts-ignore
   const userId = req.userId;
   const content = await ContentModel.find({
-    userId
-  }).populate("userId", "username")
+    userId,
+  }).populate("userId", "username");
   res.json({
-    content
-  })
+    content,
+  });
 });
-app.post("/api/v2/brain/:shareLink", (req, res) => {});
+
+
+
+// DELETE THE CONTENT 
+app.delete("/api/v1/content", UserMiddleware,  async (req, res) => {
+  const contentId = req.body.contentId;
+
+  await ContentModel.deleteMany({
+    contentId,
+    //@ts-ignore
+    userId: req.userId,
+  });
+  res.json({
+    message: "Content deleted !",
+  });
+});
 
 app.listen(3000, () => {
   console.log("🚀 Server running on http://localhost:3000");

@@ -1,6 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 import dotenv from "dotenv";
-import { ref } from "process";
+// import { ref } from "process";
 dotenv.config();
 const MONGODB_URI = process.env.MONGODB_URI as string;
 mongoose.connect(MONGODB_URI);
