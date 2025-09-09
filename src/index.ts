@@ -1,8 +1,9 @@
 import express from "express";
-import { ContentModel, UserModel } from "./db.js";
+import { ContentModel, LinkModel, UserModel } from "./db.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { UserMiddleware } from "./middleware.js";
+import { random } from "./utils/random.js";
 
 const app = express();
 
@@ -85,10 +86,8 @@ app.get("/api/v1/content", UserMiddleware, async (req, res) => {
   });
 });
 
-
-
-// DELETE THE CONTENT 
-app.delete("/api/v1/content", UserMiddleware,  async (req, res) => {
+// DELETE THE CONTENT
+app.delete("/api/v1/content", UserMiddleware, async (req, res) => {
   const contentId = req.body.contentId;
 
   await ContentModel.deleteMany({
@@ -98,6 +97,59 @@ app.delete("/api/v1/content", UserMiddleware,  async (req, res) => {
   });
   res.json({
     message: "Content deleted !",
+  });
+});
+
+// Share the content
+app.post("/api/v1/share", UserMiddleware, async (req, res) => {
+  const share = req.body.share;
+  if (share) {
+    await LinkModel.create({
+      //@ts-ignore
+      userId: req.userId,
+      hash: random(10),
+    });
+  } else {
+    await LinkModel.deleteOne({
+      //@ts-ignore
+      userId: req.userId,
+    });
+  }
+  res.json({
+    message: "Updated Shared Link !",
+  });
+});
+
+//Get The Link
+app.get("/api/v1/brain/:shareLink", async (req, res) => {
+  const hash = req.params.shareLink;
+  res.json({
+    message: "Hash has been fetched Successfully !",
+  });
+
+  const link = await LinkModel.findOne({
+    hash,
+  });
+  if (!link) {
+    res.status(411).json({
+      message: "wrong input !",
+    });
+  }
+  const user = UserModel.findOne({
+    //@ts-ignore
+    userId: link.userId,
+  });
+  if (!user) {
+    res.status(411).json({
+      message: "User Does NOt Exist !",
+    });
+    return;
+  }
+  res.json({
+    //@ts-ignore
+    username: user.username,
+    //@ts-ignore
+    content: content,
   });
 });
 
