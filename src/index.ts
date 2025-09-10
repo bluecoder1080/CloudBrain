@@ -116,6 +116,10 @@ app.post("/api/v1/share", UserMiddleware, async (req, res) => {
     });
   }
   res.json({
+    //@ts-ignore
+    hash: hash,
+  });
+  res.json({
     message: "Updated Shared Link !",
   });
 });
